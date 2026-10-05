@@ -1,117 +1,93 @@
-# Getting briannasavage.nyc live
+# briannasavage.nyc — deployment status
 
-Two things need an account login, which only you can do. Everything else is
-already done — the site is built, committed to git, and the `CNAME` file
-already says `briannasavage.nyc`.
+## Done ✅
 
----
+- Repo created: **https://github.com/briannasavage101010-cpu/brianna-site** (public)
+- Site pushed to `main`
+- **GitHub Pages is switched on**, serving `main` / root
+- Custom domain registered with GitHub as `briannasavage.nyc` (from the `CNAME` file)
+- GitHub confirms it is serving: the github.io address already redirects to
+  `briannasavage.nyc`
 
-## The fastest route: Netlify (about 10 minutes)
+## Left to do ⬜
 
-### Step 1 — put the site online
+Only one thing: **point the domain at GitHub**. This needs your GoDaddy login,
+which is why I stopped — I won't type your password.
 
-1. Go to **https://app.netlify.com/drop**
-2. Open a Finder window and go to your **home folder** (not Desktop):
-   press `Command + Shift + H`
-3. Drag the **`brianna-site`** folder onto the Netlify page.
-4. It goes live straight away on a temporary address like
-   `glittering-marzipan-1a2b3c.netlify.app`. That link already works — you can
-   send it to people today.
-5. Netlify will ask you to sign up to keep it. Do that (free).
+### Step 1 — sign in at GoDaddy
 
-### Step 2 — point your domain at it
+Go to **https://dcc.godaddy.com/control/briannasavage.nyc/dns** and sign in.
+(It's already open in your browser.)
 
-1. In Netlify: **Domain management → Add a domain** → type `briannasavage.nyc`
-2. Netlify asks "Add DNS records" or "Use Netlify DNS". **Choose "Add DNS
-   records"** — do NOT choose Netlify DNS.
+### Step 2 — add these records
 
-   > This matters. You bought Microsoft 365 email on this domain. Moving your
-   > whole DNS to Netlify would break your email unless the MX records get
-   > copied across perfectly. Keeping DNS at GoDaddy avoids that risk entirely.
-
-3. Netlify shows you the records it wants. They'll look like the table below.
-
-### Step 3 — add those records at GoDaddy
-
-1. Sign in at **godaddy.com** → **My Products** → next to `briannasavage.nyc`
-   click **DNS**.
-2. Make these changes, and **nothing else**:
-
-| Action | Type | Name | Value |
+| Type | Name | Value | TTL |
 |---|---|---|---|
-| **Edit** the existing one | A | `@` | the IP Netlify gives you |
-| **Edit** the existing one | CNAME | `www` | the `.netlify.app` address Netlify gives you |
+| A | `@` | `185.199.108.153` | 1 hour |
+| A | `@` | `185.199.109.153` | 1 hour |
+| A | `@` | `185.199.110.153` | 1 hour |
+| A | `@` | `185.199.111.153` | 1 hour |
+| CNAME | `www` | `briannasavage101010-cpu.github.io` | 1 hour |
 
-3. **Do not touch anything of type MX, TXT, or SRV.** Those are your Microsoft
-   365 email. If you delete them your email stops working.
-4. Save. DNS usually updates within an hour, sometimes up to a day.
-5. Back in Netlify, click **Verify DNS configuration**. Once it's happy it adds
-   the HTTPS padlock automatically.
+GoDaddy starts you with one parked `A` record on `@`. **Edit that one** to
+`185.199.108.153`, then **Add** the other three. Same for `www` — edit the
+existing CNAME rather than adding a second one.
 
-### Updating it later
-Change the files, then drag the folder onto Netlify again. Or connect the git
-repo so it updates on every push.
+### ⚠️ Do not touch these
+
+**Leave every `MX`, `TXT`, and `SRV` record exactly as it is.** Those are your
+Microsoft 365 email. Deleting or editing them will stop
+`hello@briannasavage.nyc` from working before it has even started.
+
+You are only changing the `A` record on `@` and the `CNAME` on `www`. Nothing else.
+
+### Step 3 — wait, then turn on HTTPS
+
+- The domain was registered today, so it may take a few hours to start
+  resolving anywhere. That's normal and not something either of us can speed up.
+- Once it resolves, go back to
+  **https://github.com/briannasavage101010-cpu/brianna-site/settings/pages**
+  and tick **Enforce HTTPS**. It only becomes available after GitHub's DNS
+  check passes, which can take another hour or so after that.
 
 ---
 
-## Alternative: GitHub Pages
-
-Your git credentials already work on this machine, so this is also easy — but
-it's three steps instead of one, and the DNS is slightly fiddlier.
-
-1. Go to **https://github.com/new**. Repository name: `brianna-site`.
-   Set it to **Public**. Do **not** tick "Add a README".
-2. Then run this in Terminal:
-
-```bash
-cd ~/brianna-site && git remote add origin https://github.com/briannasavage101010-cpu/brianna-site.git && git push -u origin main
-```
-
-3. On GitHub: **Settings → Pages →** under "Branch" pick `main` / `root` → Save.
-4. In the same Pages screen, "Custom domain" should already show
-   `briannasavage.nyc` (the `CNAME` file sets it). Tick **Enforce HTTPS** once
-   it becomes available.
-5. At GoDaddy DNS, set these — again, **leave MX/TXT/SRV alone**:
-
-| Type | Name | Value |
-|---|---|---|
-| A | `@` | `185.199.108.153` |
-| A | `@` | `185.199.109.153` |
-| A | `@` | `185.199.110.153` |
-| A | `@` | `185.199.111.153` |
-| CNAME | `www` | `briannasavage101010-cpu.github.io` |
-
-GoDaddy starts with one parked `A` record on `@` — edit that one to the first
-IP, then add the other three.
-
-**Updating it later:**
+## Updating the site later
 
 ```bash
 cd ~/brianna-site && git add -A && git commit -m "update" && git push
 ```
 
----
+Changes go live about a minute after pushing.
 
-## Your email address
+## Previewing locally before you push
 
-You bought **Microsoft 365 Email Essentials** with the domain, so
-`hello@briannasavage.nyc` can be a real mailbox. Set it up at GoDaddy under
-**My Products → Email**. Create the address `hello`.
+```bash
+cd ~/brianna-site && python3 -m http.server 5195
+```
 
-The site already uses `hello@briannasavage.nyc` on the contact page and in the
-enquiry form. If you'd rather use a different name (`brianna@`, `studio@`),
-change it everywhere at once:
+Then open http://localhost:5195
+
+## Your email
+
+You bought Microsoft 365 Email Essentials with the domain, so
+`hello@briannasavage.nyc` can be real. Create it at GoDaddy under
+**My Products → Email**. The site already uses that address on the contact page
+and in the enquiry form.
+
+To use a different address instead:
 
 ```bash
 cd ~/brianna-site && grep -rl "hello@briannasavage.nyc" . --include="*.html" | xargs sed -i '' 's/hello@briannasavage.nyc/NEW@briannasavage.nyc/g'
 ```
 
----
-
 ## Checklist
 
-- [ ] Site online (Netlify drop, or GitHub Pages)
-- [ ] `briannasavage.nyc` DNS pointed at it
-- [ ] HTTPS padlock showing
-- [ ] `hello@briannasavage.nyc` mailbox created in Microsoft 365
-- [ ] Sent yourself a test enquiry through the form on `/websites/`
+- [x] Repo created and site pushed
+- [x] GitHub Pages enabled
+- [x] Custom domain set on GitHub
+- [ ] A records + www CNAME added at GoDaddy
+- [ ] Domain resolving (give it a few hours)
+- [ ] Enforce HTTPS ticked
+- [ ] `hello@briannasavage.nyc` mailbox created
+- [ ] Test enquiry sent through the form on /websites/
